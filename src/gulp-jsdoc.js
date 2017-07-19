@@ -26,7 +26,7 @@ let debug = require('debug')('gulp-jsdoc3');
  * @param {gulpDoneCallback} done
  * @returns {*|SignalBinding}
  */
-export function jsdoc(config, done) {
+export function jsdoc(config, done, ignoreErrors) {
     let files = [];
     let jsdocConfig;
 
@@ -119,7 +119,12 @@ export function jsdoc(config, done) {
                     } else {
                         gutil.log(gutil.colors.red('JSDoc returned with error code: ' + code));
                         gutil.beep();
-                        reject(new Error('JSDoc closed with error code: ' + code));
+                        if (ignoreErrors) {
+                          gutil.log('Ignoring errors and proceeding');
+                          resolve();
+                        } else {
+                          reject(new Error('JSDoc closed with error code: ' + code));
+                        }
                     }
                 });
                 child.on('error', function (error) {
